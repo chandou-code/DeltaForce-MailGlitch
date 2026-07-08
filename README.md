@@ -37,9 +37,6 @@
 | `PAK_DIR` | 游戏 pak 文件所在目录 |
 | `RAIL_DIR` | rail_files 目录路径 |
 | `WEGAME_PATH` | WeGame 启动程序路径 |
-| `PAK_ORIG` | 原始 pak 文件名 |
-| `PAK_NEW` | 修改后的 pak 文件名 |
-| `DAT_NAME` | dat 文件名（默认 package_info.dat） |
 | `DAT_SRC_DIR` | 用于替换的 dat 源文件所在目录 |
 | `WEGAME_PROCESSES` | 需要关闭的 WeGame 进程列表 |
 
