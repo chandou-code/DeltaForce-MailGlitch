@@ -38,7 +38,6 @@
 | `RAIL_DIR` | rail_files 目录路径 |
 | `WEGAME_PATH` | WeGame 启动程序路径 |
 | `DAT_SRC_DIR` | 用于替换的 dat 源文件所在目录 |
-| `WEGAME_PROCESSES` | 需要关闭的 WeGame 进程列表 |
 
 > `DAT_SRC_DIR` 目录下需要放一份你自己原本的 `package_info.dat` 文件，恢复时会用它覆盖游戏目录里的原文件。
 
