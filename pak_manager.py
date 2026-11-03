@@ -34,14 +34,17 @@ def backup_dat():
 def modify():
     backup_dat()
 
+    renamed = 0
     for pak_orig, pak_new in PAK_PAIRS:
         pak_src = os.path.join(PAK_DIR, pak_orig)
         pak_dst = os.path.join(PAK_DIR, pak_new)
         if os.path.exists(pak_src):
             os.rename(pak_src, pak_dst)
             print(f"已重命名: {pak_orig} -> {pak_new}")
+            renamed += 1
         else:
             print(f"未找到文件: {pak_src}")
+    return renamed
 
 
 def restore():
@@ -143,12 +146,20 @@ def wait_for_exit(exit_num, tip_on_start=None, tip_on_exit=None):
         prev_running = current_running
 
 
+def wait_confirm(tip):
+    while True:
+        if input(f"{tip}（完成后输入 1 继续）: ").strip() == "1":
+            return
+        print("输入无效，请输入 1 确认")
+
+
 def auto_mode():
     print("\n===== 自动化模式（循环执行） =====")
     print("流程: 第1次大退 → 脚本修改 → 第2次大退 → 脚本恢复 → 重启WeGame → 第3次大退 → 重启WeGame → 循环")
     print("按 Ctrl+C 可随时停止\n")
 
     round_num = 0
+    pak_modified = False
     try:
         while True:
             round_num += 1
@@ -158,15 +169,17 @@ def auto_mode():
             wait_for_exit(1, tip_on_start="裸装进长弓 → 选人界面大退")
 
             print("\n--- 阶段2: 执行脚本修改 ---")
-            modify()
+            pak_modified = modify() > 0
             print("脚本修改完成")
             print("【提示】删地图 → 上装备 → 大退")
+            wait_confirm("请在 WeGame 中删除地图")
 
             print("\n--- 阶段3: 等待第二次大退 ---")
             wait_for_exit(2, tip_on_start="把要卡的物品放身上 → 大退")
 
             print("\n--- 阶段4: 执行脚本恢复 ---")
             restore()
+            pak_modified = False
             print("脚本恢复完成")
 
             print("\n--- 阶段5: 重启 WeGame ---")
@@ -182,6 +195,10 @@ def auto_mode():
 
     except KeyboardInterrupt:
         print("\n\n已停止自动化模式")
+        if pak_modified:
+            print("\n检测到 pak 仍处于改名状态，自动恢复...")
+            restore()
+            print("已自动恢复")
 
 
 def main():
