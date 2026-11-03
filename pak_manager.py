@@ -13,42 +13,56 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
 PAK_DIR = _cfg["PAK_DIR"]
 RAIL_DIR = _cfg["RAIL_DIR"]
 WEGAME_PATH = _cfg["WEGAME_PATH"]
-PAK_ORIG = _cfg["PAK_ORIG"]
-PAK_NEW = _cfg["PAK_NEW"]
+PAK_PAIRS = _cfg["PAK_PAIRS"]
 DAT_NAME = _cfg["DAT_NAME"]
-DAT_SRC_DIR = _cfg["DAT_SRC_DIR"]
+DAT_BACKUP_DIR = _cfg["DAT_BACKUP_DIR"]
+DAT_BACKUP_PATH = os.path.join(DAT_BACKUP_DIR, DAT_NAME + ".bak")
 WEGAME_PROCESSES = _cfg["WEGAME_PROCESSES"]
 
 
+def backup_dat():
+    dat_src = os.path.join(RAIL_DIR, DAT_NAME)
+    if not os.path.exists(dat_src):
+        print(f"未找到文件: {dat_src}")
+        return
+    if os.path.exists(DAT_BACKUP_PATH):
+        os.remove(DAT_BACKUP_PATH)
+    shutil.copy2(dat_src, DAT_BACKUP_PATH)
+    print(f"已备份: {DAT_NAME} -> {DAT_BACKUP_PATH}")
+
+
 def modify():
-    pak_src = os.path.join(PAK_DIR, PAK_ORIG)
-    pak_dst = os.path.join(PAK_DIR, PAK_NEW)
-    if os.path.exists(pak_src):
-        os.rename(pak_src, pak_dst)
-        print(f"已重命名: {PAK_ORIG} -> {PAK_NEW}")
-    else:
-        print(f"未找到文件: {pak_src}")
+    backup_dat()
+
+    for pak_orig, pak_new in PAK_PAIRS:
+        pak_src = os.path.join(PAK_DIR, pak_orig)
+        pak_dst = os.path.join(PAK_DIR, pak_new)
+        if os.path.exists(pak_src):
+            os.rename(pak_src, pak_dst)
+            print(f"已重命名: {pak_orig} -> {pak_new}")
+        else:
+            print(f"未找到文件: {pak_src}")
 
 
 def restore():
-    pak_src = os.path.join(PAK_DIR, PAK_NEW)
-    pak_dst = os.path.join(PAK_DIR, PAK_ORIG)
-    if os.path.exists(pak_src):
-        os.rename(pak_src, pak_dst)
-        print(f"已重命名: {PAK_NEW} -> {PAK_ORIG}")
-    else:
-        print(f"未找到文件: {pak_src}")
+    for pak_orig, pak_new in PAK_PAIRS:
+        pak_src = os.path.join(PAK_DIR, pak_new)
+        pak_dst = os.path.join(PAK_DIR, pak_orig)
+        if os.path.exists(pak_src):
+            os.rename(pak_src, pak_dst)
+            print(f"已重命名: {pak_new} -> {pak_orig}")
+        else:
+            print(f"未找到文件: {pak_src}")
 
-    dat_src = os.path.join(DAT_SRC_DIR, DAT_NAME)
     dat_dst = os.path.join(RAIL_DIR, DAT_NAME)
-    if os.path.exists(dat_src):
+    if os.path.exists(DAT_BACKUP_PATH):
         if os.path.exists(dat_dst):
             os.remove(dat_dst)
             print(f"已删除原文件: {DAT_NAME}")
-        shutil.copy2(dat_src, dat_dst)
-        print(f"已替换: {DAT_NAME}")
+        shutil.copy2(DAT_BACKUP_PATH, dat_dst)
+        print(f"已还原: {DAT_NAME}")
     else:
-        print(f"未找到源文件: {dat_src}")
+        print(f"未找到备份: {DAT_BACKUP_PATH}")
 
 
 def is_deltaforce_running():
@@ -141,15 +155,15 @@ def auto_mode():
             print(f"\n========== 第 {round_num} 轮 ==========")
 
             print("--- 阶段1: 等待第一次大退 ---")
-            wait_for_exit(1, tip_on_start="请裸装进入长弓然后在选人界面大退")
+            wait_for_exit(1, tip_on_start="裸装进长弓 → 选人界面大退")
 
             print("\n--- 阶段2: 执行脚本修改 ---")
             modify()
             print("脚本修改完成")
-            print("【提示】请去删除地图，然后上装备后大退")
+            print("【提示】删地图 → 上装备 → 大退")
 
             print("\n--- 阶段3: 等待第二次大退 ---")
-            wait_for_exit(2, tip_on_start="把要卡的东西放在身上然后大退")
+            wait_for_exit(2, tip_on_start="把要卡的物品放身上 → 大退")
 
             print("\n--- 阶段4: 执行脚本恢复 ---")
             restore()
@@ -159,7 +173,7 @@ def auto_mode():
             restart_wegame()
 
             print("\n--- 阶段6: 等待第三次大退 ---")
-            wait_for_exit(3, tip_on_start="上号重连进长弓自雷以后大退 完成后自动循环回到第1阶段")
+            wait_for_exit(3, tip_on_start="重连进长弓自雷 → 大退，自动循环下一轮")
 
             print("\n--- 阶段7: 重启 WeGame ---")
             restart_wegame()

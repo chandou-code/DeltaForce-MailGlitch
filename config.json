@@ -2,10 +2,12 @@
     "PAK_DIR": "D:\\cf\\WeGameApps\\rail_apps\\DeltaForce(2001918)\\DeltaForce\\PackContent\\Paks",
     "RAIL_DIR": "D:\\cf\\WeGameApps\\rail_apps\\DeltaForce(2001918)\\rail_files",
     "WEGAME_PATH": "D:\\安装在这啊啊啊\\WeGame\\wegame.exe",
-    "PAK_ORIG": "pak-0-2-pakchunk90-WindowsClient.pak",
-    "PAK_NEW": "1.pak",
+    "PAK_PAIRS": [
+        ["pak-0-2-pakchunk90-WindowsClient.pak", "1.pak"],
+        ["pak-0-2-pakchunk90optional-WindowsClient.pak", "2.pak"]
+    ],
     "DAT_NAME": "package_info.dat",
-    "DAT_SRC_DIR": "C:\\Users\\10717\\PycharmProjects\\卡邮件",
+    "DAT_BACKUP_DIR": "C:\\Users\\10717\\PycharmProjects\\卡邮件",
     "WEGAME_PROCESSES": [
         "wegame.exe",
         "wegamecore.exe",
